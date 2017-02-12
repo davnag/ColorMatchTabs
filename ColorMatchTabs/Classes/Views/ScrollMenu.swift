@@ -11,6 +11,7 @@ import UIKit
 @objc public protocol ScrollMenuDelegate: UIScrollViewDelegate {
     
     @objc optional func scrollMenu(_ scrollMenu: ScrollMenu, didSelectedItemAt index: Int)
+    @objc optional func scrollMenu(_ scrollMenu: ScrollMenu, willSelectedItemAt index: Int)
     
 }
 
@@ -91,6 +92,8 @@ open class ScrollMenu: UIScrollView {
             return
         }
         
+        menuDelegate?.scrollMenu?(self, willSelectedItemAt: index)
+        
         manualSelection = true
         destinationIndex = index
         
@@ -98,6 +101,7 @@ open class ScrollMenu: UIScrollView {
         let last = max(index, indexOfVisibleItem)
         hideContent(forRange: first..<last)
         updateContentOffset(withIndex: index, animated: true)
+        
     }
  
     open func reloadData() {

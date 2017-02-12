@@ -84,9 +84,7 @@ open class ColorMatchTabsViewController: UITabBarController {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        selectItem(at: _view.tabs.selectedSegmentIndex)
-        setDefaultPositions()
+        firstSetup()
     }
     
     open func reloadData() {
@@ -98,6 +96,21 @@ open class ColorMatchTabsViewController: UITabBarController {
         setupIcons()
     }
     
+    var didDoFirstSetup = false
+    
+    open func firstSetup() {
+        if didDoFirstSetup == false {
+            didDoFirstSetup = true
+            selectItem(at: _view.tabs.selectedSegmentIndex)
+            setDefaultPositions()
+        }
+    }
+    
+    open var selectedSegmentIndex:Int {
+        get {
+            return _view.tabs.selectedSegmentIndex
+        }
+    }
 }
 
 // setup
@@ -232,7 +245,7 @@ private extension ColorMatchTabsViewController {
             return
         }
         
-        popoverViewController.transitioningDelegate = self
+        //popoverViewController.transitioningDelegate = self
         popoverViewController.highlightedItemIndex = _view.tabs.selectedSegmentIndex
         popoverViewController.view.backgroundColor = .white
         popoverViewController.reloadData()
@@ -251,33 +264,12 @@ private extension ColorMatchTabsViewController {
 
 extension ColorMatchTabsViewController: ScrollMenuDelegate {
     
-    public func scrollMenu(_ scrollMenu: ScrollMenu, didSelectedItemAt index: Int) {
+    open func scrollMenu(_ scrollMenu: ScrollMenu, didSelectedItemAt index: Int) {
         updateNavigationBar(forSelectedIndex: index)
         if _view.tabs.selectedSegmentIndex != index {
+        _view.scrollMenu.menuDelegate?.scrollMenu!(_view.scrollMenu, willSelectedItemAt: index)
             _view.tabs.selectedSegmentIndex = index
         }
-    }
-    
-}
-
-extension ColorMatchTabsViewController: UIViewControllerTransitioningDelegate {
-    
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        circleTransition.mode = .show
-        circleTransition.startPoint = _view.circleMenuButton.center
-        
-        return circleTransition
-    }
-    
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let dismissedViewController = dismissed as? PopoverViewController else {
-            return nil
-        }
-        
-        circleTransition.mode = .hide
-        circleTransition.startPoint = dismissedViewController.menu.center
-        
-        return circleTransition
     }
     
 }
