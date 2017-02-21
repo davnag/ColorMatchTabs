@@ -259,19 +259,16 @@ private extension ColorMatchTabsViewController {
             _view.scrollMenu.selectItem(atIndex: sender.selectedSegmentIndex)
         }
     }
-    
 }
 
 extension ColorMatchTabsViewController: ScrollMenuDelegate {
-    
     open func scrollMenu(_ scrollMenu: ScrollMenu, didSelectedItemAt index: Int) {
         updateNavigationBar(forSelectedIndex: index)
         if _view.tabs.selectedSegmentIndex != index {
-        _view.scrollMenu.menuDelegate?.scrollMenu!(_view.scrollMenu, willSelectedItemAt: index)
+            _view.scrollMenu.menuDelegate?.scrollMenu?(_view.scrollMenu, willSelectedItemAt: index)
             _view.tabs.selectedSegmentIndex = index
         }
     }
-    
 }
 
 // MARK: - Data sources
