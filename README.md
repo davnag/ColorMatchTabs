@@ -1,6 +1,7 @@
 # ColorMatchTabs
 
-![Swift 2.3.x](https://img.shields.io/badge/Swift-2.3.x-orange.svg)
+![cocoapods](https://img.shields.io/cocoapods/v/ColorMatchTabs.svg)
+![Swift 5](https://img.shields.io/badge/Swift-5.x-orange.svg)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/ColorMatchTabs.svg)](https://img.shields.io/cocoapods/v/GuillotineMenu.svg)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
@@ -10,25 +11,19 @@ Inspired by [this project on Dribbble](https://dribbble.com/shots/2702517-Review
 
 Also, read how it was done in [our blog](https://yalantis.com/blog/how-we-developed-colormatchtabs-animation-for-ios/)
 
-## Requirements
-
-* iOS 9.0
-* Swift 3
-* Xcode 8
-
 ## Installation
 
-####[CocoaPods](https://cocoapods.org/)
+#### [CocoaPods](https://cocoapods.org/)
 
 ```ruby
-pod 'ColorMatchTabs', '~> 2.0'
+pod 'ColorMatchTabs'
 ```
 
 #### [Carthage](https://github.com/Carthage/Carthage)
 
 
 ```
-github "Yalantis/ColorMatchTabs" ~> 2.0
+github "Yalantis/ColorMatchTabs"
 ```
 
 ## How to use
@@ -83,7 +78,7 @@ P.S. We’re going to publish more awesomeness wrapped in code and a tutorial on
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Yalantis
+Copyright (c) 2020 Yalantis
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

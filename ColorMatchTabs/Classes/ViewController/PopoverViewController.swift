@@ -11,7 +11,7 @@ import UIKit
 private let ContentPadding: CGFloat = 20
 
 @objc public protocol PopoverViewControllerDelegate: class {
-
+    
     func popoverViewController(_ popoverViewController: PopoverViewController, didSelectItemAt index: Int)
     
 }
@@ -29,7 +29,7 @@ open class PopoverViewController: UIViewController {
     
     open weak var dataSource: PopoverViewControllerDataSource?
     open weak var delegate: PopoverViewControllerDelegate?
-    open let contentView = UIView()
+    public let contentView = UIView()
     
     var highlightedItemIndex: Int!
     let menu: CircleMenu = CircleMenu()
@@ -115,7 +115,8 @@ private extension PopoverViewController {
 // actions
 private extension PopoverViewController {
     
-    @objc func hidePopover(_ sender: AnyObject? = nil) {
+    @objc
+    func hidePopover(_ sender: AnyObject? = nil) {
         dismiss(animated: true, completion: nil)
     }
     
@@ -144,7 +145,7 @@ private extension PopoverViewController {
                     } else {
                         iconImageView.image = self.dataSource?.popoverViewController(self, iconAt: index)
                     }
-                },
+            },
                 completion: nil
             )
         }
@@ -163,7 +164,7 @@ private extension PopoverViewController {
                 animations: {
                     iconImageView.center = self.menu.centerOfItem(atIndex: index)
                     iconImageView.image = self.dataSource?.popoverViewController(self, hightlightedIconAt: index)
-                },
+            },
                 completion: nil
             )
         }
@@ -187,7 +188,7 @@ private extension PopoverViewController {
             options: [],
             animations: {
                 self.view.layoutIfNeeded()
-            },
+        },
             completion: nil
         )
     }
@@ -203,7 +204,7 @@ private extension PopoverViewController {
             withDuration: AnimationDuration,
             animations: {
                 self.view.layoutIfNeeded()
-            },
+        },
             completion: nil
         )
     }
@@ -213,10 +214,10 @@ private extension PopoverViewController {
 extension PopoverViewController: CircleMenuDelegate {
     
     public func circleMenuWillDisplayItems(_ circleMenu: CircleMenu) {
-        moveIconsToCircle()
         showContentView()
+        moveIconsToCircle()
     }
-
+    
     public func circleMenuWillHideItems(_ circleMenu: CircleMenu) {
         moveIconsToDefaultPositions()
         hideContentMenu()

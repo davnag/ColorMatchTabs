@@ -10,9 +10,10 @@ import UIKit
 
 @objc public protocol ScrollMenuDelegate: UIScrollViewDelegate {
     
+
     @objc optional func scrollMenu(_ scrollMenu: ScrollMenu, didSelectedItemAt index: Int)
     @objc optional func scrollMenu(_ scrollMenu: ScrollMenu, willSelectedItemAt index: Int)
-    
+
 }
 
 @objc public protocol ScrollMenuDataSource: class {
@@ -24,25 +25,21 @@ import UIKit
 
 open class ScrollMenu: UIScrollView {
     
-    @IBOutlet open weak var menuDelegate: ScrollMenuDelegate?
-    @IBOutlet open weak var dataSource: ScrollMenuDataSource?
+    @IBOutlet open var menuDelegate: ScrollMenuDelegate?
+    @IBOutlet open var dataSource: ScrollMenuDataSource?
     
     open var destinationIndex = 0
-
-    fileprivate var indexOfVisibleItem: Int {
+    
+    private var indexOfVisibleItem: Int {
         if bounds.width > 0 {
             return min(Int(round(contentOffset.x / bounds.width)), viewControllers.count - 1)
         }
         return 0
     }
-    fileprivate var previousIndex = 0
-    fileprivate var manualSelection = false
+    private var previousIndex = 0
+    private var manualSelection = false
     
-    fileprivate var viewControllers: [UIViewController] = [] {
-        didSet {
-            layoutContent()
-        }
-    }
+    private var viewControllers: [UIViewController] = []
     
     override open var contentOffset: CGPoint {
         didSet {
@@ -77,8 +74,12 @@ open class ScrollMenu: UIScrollView {
         commonInit()
     }
     
-    fileprivate func commonInit() {
+    private func commonInit() {
         isPagingEnabled = true
+        bounces = false
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = .never
+        }
     }
     
     override open func layoutSubviews() {
@@ -103,22 +104,26 @@ open class ScrollMenu: UIScrollView {
         updateContentOffset(withIndex: index, animated: true)
         
     }
- 
+    
     open func reloadData() {
         guard let dataSource = dataSource else {
             return
         }
         
-        viewControllers = []
-        for index in 0..<dataSource.numberOfItemsInScrollMenu(self) {
-            let viewController = dataSource.scrollMenu(self, viewControllerAtIndex: index)
-            viewControllers.append(viewController)
-            addSubview(viewController.view)
+        var oldViewControllers = viewControllers
+        let newViewControllers = (0..<dataSource.numberOfItemsInScrollMenu(self)).map { dataSource.scrollMenu(self, viewControllerAtIndex: $0) }
+        newViewControllers.forEach { controller in
+            let oldControllerIndex = oldViewControllers.firstIndex(of: controller)
+            if let index = oldControllerIndex {
+                oldViewControllers.remove(at: index)
+            } else {
+                addSubview(controller.view)
+            }
         }
-        
+        oldViewControllers.forEach { $0.view.removeFromSuperview() }
+        viewControllers = newViewControllers
         layoutContent()
     }
-    
     
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -132,13 +137,10 @@ private extension ScrollMenu {
     
     func layoutContent() {
         contentSize = CGSize(width: bounds.width * CGFloat(viewControllers.count), height: bounds.height)
-        
-        for (index, viewController) in viewControllers.enumerated() {
-            viewController.view.frame = CGRect(
-                x: bounds.width * CGFloat(index),
-                y: 0,
-                width: bounds.width,
-                height: bounds.height 
+        viewControllers.enumerated().forEach {
+            $0.element.view.frame = CGRect(
+                origin: CGPoint(x: bounds.width * CGFloat($0.offset), y: 0),
+                size: bounds.size
             )
         }
     }
@@ -156,9 +158,9 @@ private extension ScrollMenu {
             viewController.view.isHidden = range.contains(index)
         }
     }
-
+    
     func showAllContent() {
-         viewControllers.forEach { viewController in
+        viewControllers.forEach { viewController in
             viewController.view.isHidden = false
         }
     }

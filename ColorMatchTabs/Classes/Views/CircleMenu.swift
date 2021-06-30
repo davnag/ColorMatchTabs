@@ -10,10 +10,13 @@ import UIKit
 
 @objc public protocol CircleMenuDelegate: class {
     
-    @objc optional func circleMenuWillDisplayItems(_ circleMenu: CircleMenu)
-    @objc optional func circleMenuWillHideItems(_ circleMenu: CircleMenu)
+    @objc
+    optional func circleMenuWillDisplayItems(_ circleMenu: CircleMenu)
+    @objc
+    optional func circleMenuWillHideItems(_ circleMenu: CircleMenu)
     
-    @objc optional func circleMenu(_ circleMenu: CircleMenu, didSelectItemAt index: Int)
+    @objc
+    optional func circleMenu(_ circleMenu: CircleMenu, didSelectItemAt index: Int)
     
 }
 
@@ -28,16 +31,16 @@ public protocol CircleMenuDataSource: class {
 open class CircleMenu: UIControl {
     
     /// Delegate.
-    @IBInspectable open weak var delegate: CircleMenuDelegate?
+    open weak var delegate: CircleMenuDelegate?
     
     /// Delegate.
-    @IBInspectable open weak var dataSource: CircleMenuDataSource?
+    open weak var dataSource: CircleMenuDataSource?
     
     /// Animation delay.
-    @IBInspectable open var animationDelay: TimeInterval = 0
+    open var animationDelay: TimeInterval = 0
     
     /// Animation duration.
-    @IBInspectable open var animationDuration: TimeInterval = 0.5
+    open var animationDuration: TimeInterval = 0.5
     
     // Radius of spreading the elements.
     @IBInspectable open var itemsSpacing: CGFloat = 130
@@ -51,7 +54,7 @@ open class CircleMenu: UIControl {
             imageView.image = image
         }
     }
-
+    
     fileprivate var visible = false
     fileprivate var buttons: [UIButton] = []
     fileprivate var imageView: UIImageView = UIImageView()
@@ -83,9 +86,9 @@ open class CircleMenu: UIControl {
     override open func didMoveToSuperview() {
         super.didMoveToSuperview()
         
-        buttons.forEach { superview?.addSubview($0) }
+        buttons.filter{ $0.superview == nil }.forEach{ superview?.addSubview($0) }
     }
- 
+    
 }
 
 public extension CircleMenu {
@@ -107,6 +110,7 @@ public extension CircleMenu {
             button.layer.cornerRadius = itemDimension / 2
             button.layer.masksToBounds = true
             
+            superview?.addSubview(button)
             buttons.append(button)
         }
     }
@@ -121,8 +125,8 @@ public extension CircleMenu {
         assert(index >= 0)
         assert(index < count)
         
-        let deltaAngle = CGFloat(M_PI / Double(Double(count)))
-        let angle = deltaAngle * CGFloat(Double(index) + 0.5) - CGFloat(M_PI)
+        let deltaAngle = CGFloat(Double.pi / Double(Double(count)))
+        let angle = deltaAngle * CGFloat(Double(index) + 0.5) - CGFloat(Double.pi)
         
         let x = itemsSpacing * cos(angle) + bounds.size.width / 2
         let y = itemsSpacing * sin(angle) + bounds.size.height / 2
@@ -144,7 +148,8 @@ public extension CircleMenu {
         }
     }
     
-    @objc func triggerMenu(_ sender: AnyObject? = nil) {
+    @objc
+    func triggerMenu(_ sender: AnyObject? = nil) {
         assert(superview != nil, "You must add the menu to superview before perfoming any actions with it")
         
         visible = !visible
@@ -156,7 +161,8 @@ public extension CircleMenu {
         setCloseButtonHidden(!visible)
     }
     
-    @objc func selectItem(_ sender: UIButton) {
+    @objc
+    func selectItem(_ sender: UIButton) {
         hideItems()
         delegate?.circleMenu?(self, didSelectItemAt: sender.tag)
     }
@@ -169,7 +175,7 @@ private extension CircleMenu {
         addSubview(imageView)
         addTarget(self, action: #selector(triggerMenu), for: .touchUpInside)
     }
-        
+    
     func removeOldButtons() {
         self.buttons.forEach {
             $0.removeFromSuperview()
@@ -197,12 +203,12 @@ extension CircleMenu {
         
         for (index, button) in buttons.enumerated() {
             button.frame = sourceFrame
-            performAnimated ({
+            performAnimated({
                 button.isHidden = false
                 button.frame = self.targetFrameForItem(at: index)
             })
         }
-        superview.bringSubview(toFront: self)
+        superview.bringSubviewToFront(self)
     }
     
     func hideItems() {
@@ -222,7 +228,7 @@ extension CircleMenu {
     
     func setCloseButtonHidden(_ hidden: Bool) {
         performAnimated({
-            self.transform = hidden ? CGAffineTransform.identity : CGAffineTransform(rotationAngle: CGFloat(M_PI) * 0.75)
+            self.transform = hidden ? CGAffineTransform.identity : CGAffineTransform(rotationAngle: CGFloat(Double.pi) * 0.75)
         })
     }
     
